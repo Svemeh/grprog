@@ -146,12 +146,7 @@ void frigiAllokertMemory() {
  *  @return   Om kampen er ferdigspilt eller ei
  */
 bool kampFerdig(const struct Kamp* kamp) {
-    if (kamp->ferdig == false)
-    {
-        return false;
-    } else {
-        return true;
-    }
+    return kamp->ferdig;
 }
 
 
@@ -191,26 +186,26 @@ void kampLesData(struct Kamp* kamp) {
  */
 void kampRegistrerResultat(struct Kamp* kamp) {
     // Sjekker om kampen er ferdig spilt allerede
-    if (kamp->ferdig == true) {
+    if (kamp->ferdig) {
         printf("Kampen er ferdig spilt.\n");
-        return;
-    }
+    }else{
 
-    // Skriver opp antall mål begge lag fikk
-    lagSkrivNavn(kamp->lag1);
-    kamp->maalLag1 = lesInt("\tMål scoret:", 0, 10);
-    lagSkrivNavn(kamp->lag2);
-    kamp->maalLag2 = lesInt("\tMål Scoret:", 0, 10);
+        // Skriver opp antall mål begge lag fikk
+        lagSkrivNavn(kamp->lag1);
+        kamp->maalLag1 = lesInt("\tMål scoret:", 0, 10);
+        lagSkrivNavn(kamp->lag2);
+        kamp->maalLag2 = lesInt("\tMål Scoret:", 0, 10);
 
-    // Utdeler poeng og oppdaterer mål scoret og sluppet inn på lag struct
-    lagGiPoeng(kamp->lag1, kamp->maalLag1, kamp->maalLag2);
-    lagGiPoeng(kamp->lag2, kamp->maalLag2, kamp->maalLag1);
+        // Utdeler poeng og oppdaterer mål scoret og sluppet inn på lag struct
+        lagGiPoeng(kamp->lag1, kamp->maalLag1, kamp->maalLag2);
+        lagGiPoeng(kamp->lag2, kamp->maalLag2, kamp->maalLag1);
     
-    // Skriver ut kamp data til bruker
-    kampSkrivData(kamp);
+        // Skriver ut kamp data til bruker
+        kampSkrivData(kamp);
 
-    // Registrerer kamp som ferdig spilt
-    kamp->ferdig = true;
+        // Registrerer kamp som ferdig spilt
+        kamp->ferdig = true;
+    }
 }
 
 
@@ -247,6 +242,10 @@ void kampSlettResultat(struct Kamp* kamp) {
     lagFjernPoeng(kamp->lag1, kamp->maalLag1, kamp->maalLag2);
     lagFjernPoeng(kamp->lag2, kamp->maalLag2, kamp->maalLag1);
 
+    // Nullstiller mål
+    kamp->maalLag1 = 0;
+    kamp->maalLag2 = 0;
+
     // Kampen blir satt til uferdig igjen
     kamp->ferdig = false;
 }
@@ -263,15 +262,15 @@ void lagFjernPoeng(struct Lag* lag, const int scoret, const int inn) {
     // Fjerner poeng utdelt fra kampen
     if (scoret == inn) 
     {
-        lag->poeng = lag->poeng - 1;
+        lag->poeng -= 1;
     } else if (scoret > inn) 
     {
-        lag->poeng = lag->poeng - 3;
+        lag->poeng -= 3;
     }
 
     // Oppdaterer mål statestikk på lag struct
-    lag->maalScoret = lag->maalScoret - scoret;
-    lag->maalSluppetInn = lag->maalSluppetInn - inn;
+    lag->maalScoret -= scoret;
+    lag->maalSluppetInn -= inn;
 }
 
 
@@ -287,15 +286,15 @@ void lagGiPoeng(struct Lag* lag, const int scoret, const int inn) {
     // Utdeler poeng, Seier blir tre poeng, Uavgjort blir ett poeng, tap er null
     if (scoret == inn) 
     {
-        lag->poeng = lag->poeng + 1;
+        lag->poeng += 1;
     } else if (scoret > inn) 
     {
-        lag->poeng = lag->poeng + 3;
+        lag->poeng += 3;
     }
 
     // Oppdaterer mål statestikk
-    lag->maalScoret = lag->maalScoret + scoret;
-    lag->maalSluppetInn = lag->maalSluppetInn + inn;
+    lag->maalScoret += scoret;
+    lag->maalSluppetInn += inn;
 }
 
 
